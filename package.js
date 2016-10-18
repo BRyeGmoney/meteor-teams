@@ -2,7 +2,7 @@ Package.describe({
   name: 'bgromadzki:meteor-teams',
   version: '0.0.2',
   // Brief, one-line summary of the package.
-  summary: 'Additional "hierarchy" style authorization features built on the roles package',
+  summary: 'Additional "hierarchy" style authorization (using mongo materialized paths pattern) features built on the roles package',
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/BRyeGmoney/meteor-teams.git',
   // By default, Meteor will default to using README.md for documentation.
@@ -18,7 +18,6 @@ Package.onUse(function(api) {
   api.use(['ecmascript',
            'underscore',
            'accounts-base',
-           'alanning:roles@1.2.15',
            'mongo',
            'tracker',
            'check'], both);

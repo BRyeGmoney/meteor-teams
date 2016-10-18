@@ -118,6 +118,23 @@
       })
 
       Tinytest.add(
+        'teams - can check if all teams exist underneath an organization',
+        (test) => {
+          reset();
+
+          Teams.createTeam('teamA');
+          Teams.createTeam('teamB');
+          Teams.createTeam('divisionA', 'teamA');
+          Teams.createTeam('divisionB', 'teamA');
+          Teams.createTeam('slave_drivers', 'divisionB');
+          Teams.createTeam('bookkeepers', 'teamB');
+          Teams.createTeam('poopers', 'teamA');
+
+          test.equal(Teams.getAllTeamsUnderTeam('teamA'),
+            [{'name':'divisionA'}, {'name':'divisionB'}, {'name':'slave_drivers'}, {'name':'poopers'}]);
+        })
+
+      Tinytest.add(
         'teams - can check if user is in team',
         (test) => {
           reset();

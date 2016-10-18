@@ -151,6 +151,21 @@ _.extend(Teams, {
         }
       }
     },
+    getAllTeamsUnderTeam: function(team) {
+      if (typeof team === 'object') {
+        team = team.name;
+      }
+
+      if (typeof team === 'string') {
+        //console.log(new RegExp('^' + team + '-'));
+        console.log(Meteor.teams.find({}, {fields: {_id:0, name:1, path:1}}).fetch());
+        let teams = Meteor.teams.find({ 'path' : new RegExp('^' + team) },
+                      { fields: {_id: 0, name:1}}).fetch();
+
+        console.log(teams);
+        return teams;
+      }
+    },
     isAncestorForTeam: function(team, potentialAncestor) {
       if (typeof team === 'string') {
         return Teams.getFullPathForTeam(team).includes(potentialAncestor);
