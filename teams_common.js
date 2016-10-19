@@ -75,6 +75,13 @@ _.extend(Teams, {
                                 {teams: {$in: [team]}},
                                 {fields: {_id: 1}});
 
+      var foundSubTeam = Teams.getAllTeamsUnderTeam(team);
+
+      
+      if (foundExistingUser || foundSubTeam.length > 0) {
+        throw new Meteor.Error(403, 'Team in use');
+      }
+
       var thisTeam = Meteor.teams.findOne({name: team});
       if (thisTeam) {
         Meteor.teams.remove({_id: thisTeam._id});
@@ -157,12 +164,9 @@ _.extend(Teams, {
       }
 
       if (typeof team === 'string') {
-        //console.log(new RegExp('^' + team + '-'));
-        console.log(Meteor.teams.find({}, {fields: {_id:0, name:1, path:1}}).fetch());
-        let teams = Meteor.teams.find({ 'path' : new RegExp('^' + team) },
+        let teams = Meteor.teams.find({ 'path' : new RegExp(team) }, //'^' +
                       { fields: {_id: 0, name:1}}).fetch();
 
-        console.log(teams);
         return teams;
       }
     },

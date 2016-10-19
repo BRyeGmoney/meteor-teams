@@ -47,7 +47,7 @@
     }
 
     Tinytest.add(
-      'teams - can create and delete teams',
+      'teams - can create and delete teams base',
        (test) => {
         reset();
 
@@ -64,6 +64,28 @@
 
         Teams.deleteTeam('teamB');
         test.equal(typeof Meteor.teams.findOne(), 'undefined');
+      })
+
+      Tinytest.add(
+        'teams - can\'t delete teams that have teams under them',
+        (test) => {
+          reset();
+
+          Teams.createTeam('teamA');
+          test.equal(Meteor.teams.findOne().name, 'teamA');
+
+          Teams.createTeam('divisionA', 'teamA');
+          test.equal(Meteor.teams.findOne({'name': 'divisionA'}).name, "divisionA");
+
+          test.equal(Meteor.teams.find().count(), 2);
+
+          test.throws(()=> { Teams.deleteTeam('teamA') });
+
+          Teams.deleteTeam('divisionA');
+          test.equal(typeof Meteor.teams.findOne({'name':'divisionA'}), 'undefined');
+
+          Teams.deleteTeam('teamA');
+          test.equal(typeof Meteor.teams.findOne({'name':'teamA'}), 'undefined');
       })
 
       Tinytest.add(
