@@ -41,7 +41,7 @@ _.extend(Teams, {
      var teamNameToInsert = team.trim().replace(/\s/g, '_');
      try {
        if (!owningTeam) {
-         id = Meteor.teams.insert({'name': teamNameToInsert, 'path': null });
+         id = Meteor.teams.insert({'name': teamNameToInsert, 'path': '' });
        } else {
 
          if (typeof owningTeam === 'object') owningTeam = owningTeam.name;
@@ -77,7 +77,7 @@ _.extend(Teams, {
 
       var foundSubTeam = Teams.getAllTeamsUnderTeam(team);
 
-      
+
       if (foundExistingUser || foundSubTeam.length > 0) {
         throw new Meteor.Error(403, 'Team in use');
       }
@@ -87,12 +87,26 @@ _.extend(Teams, {
         Meteor.teams.remove({_id: thisTeam._id});
       }
     },
+    /**
+      * Add roles to a user, must be to a specific team right now v0.1.X
+      *
+      * @method addUsersToRolesInTeam
+      * @param {Array|String} users User id(s) or object(s) with an _id fields
+      * @param {Array|String} roles name(s) of roles/permissions to add users to
+      * @param {String} team Name of team that the role will be applied to
+      */
+    addUsersToRolesInTeam: function(users, roles, team) {
+      Teams._updateUserTeams(users, team, roles, Teams._update_$addToSet_fn);
+    },
     addUsersToTeams: function (users, teams) {
       //use Template pattern to update user teams
-      Teams._updateUserTeams(users, teams, Teams._update_$addToSet_fn);
+      Teams._updateUserTeams(users, teams, null, Teams._update_$addToSet_fn);
     },
     setUserTeams: function(users, teams) {
-      Teams._updateUserTeams(users, teams, Teams._update_$set_fn);
+      Teams._updateUserTeams(users, teams, null, Teams._update_$set_fn);
+    },
+    removeUsersFromRolesInTeams: function(users, teams, roles) {
+
     },
     removeUsersFromTeams: function (users, teams) {
       var update;
@@ -119,30 +133,40 @@ _.extend(Teams, {
         return memo
       }, []);
 
-      //update all users, remove from teams set_fn
-      update = {$pullAll: {teams: teams}};
+      _.each(teams, (team) => {
+        //update all users, remove from teams set_fn
+        //update = {$pullAll: {teams: teams}};
+        update = {$unset: {}};
+        update.$unset['teams.'+team] = 1
+        //update.$pullAll['teams.'+team];
 
-      try {
-        if (Meteor.isClient) {
-          //Iterate over each user to fulfill Meteor's 'one update per ID' policy
-          _.each(users, function(user) {
+        try {
+          if (Meteor.isClient) {
+            //Iterate over each user to fulfill Meteor's 'one update per ID' policy
+            _.each(users, function(user) {
+              console.log(user.teams);
               Meteor.users.update({_id:user}, update);
-          });
-        } else {
-          //On the server we can leverage MongoDB's $in operator for performance
-          Meteor.users.update({_id:{$in:users}}, update, {multi:true});
+            });
+          } else {
+            //On the server we can leverage MongoDB's $in operator for performance
+            console.log(Meteor.users.findOne({_id: users[0]}, {fields: {teams:1} }));
+            Meteor.users.update({_id:{$in:users}}, update, {multi:true});
+            console.log(Meteor.users.findOne({_id: users[0]}, {fields: {teams:1} }));
+          }
         }
-      }
-      catch (ex) {
-        /*if (ex.name === 'MongoError' && isMongoMixError(ex.err || ex.errmsg)) {
-          throw new Error (mixingGroupAndNonGroupErrorMsg)
-        }*/
+        catch (ex) {
+          /*if (ex.name === 'MongoError' && isMongoMixError(ex.err || ex.errmsg)) {
+            throw new Error (mixingGroupAndNonGroupErrorMsg)
+          }*/
 
-        throw ex;
-      }
+          throw ex;
+        }
+      });
     },
     getPathForTeam: function(teamName) {
       if (typeof teamName === 'string') {
+        //console.log(teamName);
+        //console.log(Meteor.teams.findOne({name: teamName}).path);
         return Meteor.teams.findOne({name: teamName}).path;
       } else {
         throw new Error('Passed in param \'teamName\' is not a string');
@@ -174,9 +198,9 @@ _.extend(Teams, {
       if (typeof team === 'string') {
         return Teams.getFullPathForTeam(team).includes(potentialAncestor);
       } else if (typeof team === 'object') {
-        return Teams.getFullPathForTeam(team.name).includes(potentialAncestor);
+        return Teams.getFullPathForTeam(Object.keys(team)[0]).includes(potentialAncestor);
       } else {
-        return false
+        return false;
       }
     },
     userBelongsToTeam: function(user, teams) {
@@ -219,7 +243,7 @@ _.extend(Teams, {
         }
       }
     },
-    userIsInTeam: function(user, teams) {
+    userIsInTeam: function(user, teams, op) {
       var id,
           userTeams,
           query,
@@ -227,6 +251,7 @@ _.extend(Teams, {
 
       //ensure array to simplify code
       if (!_.isArray(teams)) {
+        //console.log(teams);
         teams = [teams];
       }
 
@@ -234,13 +259,25 @@ _.extend(Teams, {
 
       if ('object' === typeof user) {
         userTeams = user.teams;
+        //console.log(userTeams);
 
         if (_.isArray(userTeams)) {
           return _.some(teams, function(team) {
             return _.contains(userTeams, team);
           });
         } else if (userTeams && 'object' === typeof userTeams) {
-          //this is for if i ever choose to make teams more like dictionaries ala roles/groups
+          //teams is a dictionary
+          //console.log(op + ": " + userTeams);
+          return _.some(teams, (team) => {
+            /*if (userTeams[team]) {
+              console.log('team: ' + team + ', userTeams: ' + Object.keys(userTeams) + ', in: true');
+            } else {
+              console.log('team: ' + team + ', userTeams: ' + Object.keys(userTeams) + ', in: false');
+            }*/
+
+            return userTeams[team] ? true : false;
+          });
+
         }
 
         //missing the teams field, try going direct via id
@@ -253,6 +290,13 @@ _.extend(Teams, {
 
       query = {_id:id, $or: []};
 
+      //throw each team query in too
+      _.some(teams, (team) => {
+        teamQuery = {};
+        teamQuery['teams.' + team] = {$exists:true};
+        query.$or.push(teamQuery);
+      })
+
       //structure of query
       //Teams
       //  {_id: id,
@@ -260,7 +304,7 @@ _.extend(Teams, {
       //     {teams: {$in: ['teamA']}}
       //   ]
       // }
-      query = {_id: id, teams: {$in: teams}};
+      //query = {_id: id, teams: {$in: teams}};
 
       found = Meteor.users.findOne(query, {fields: {_id:1}});
       return found ? true : false;
@@ -274,10 +318,22 @@ _.extend(Teams, {
      * @param {Array} teams
      * @return {Object} update object for use in MongoDB update command
      */
-     _update_$set_fn: function (teams) {
+     _update_$set_fn: function (teams, roles) {
        var update = {};
 
-       update.$set= {teams:teams};
+       //if (roles) {
+
+         //_.each(teams, (team) => {
+           update.$set = {};
+           update.$set['teams.' + team] = roles;
+
+         //});
+
+         //console.log(update);
+       //} else {
+      //   update.$set= {teams:teams};
+       //}
+
        return update;
      },
      /**
@@ -289,14 +345,25 @@ _.extend(Teams, {
       * @param {Array} teams
       * @return {Object} update object for use in MongoDB update command
       */
-      _update_$addToSet_fn: function(teams) {
+      _update_$addToSet_fn: function(teams, roles) {
         var update = {};
 
-        update.$addToSet = {teams: {$each: teams}};
+        //if (roles) {
+
+          //_.each(teams, (team) => {
+            update.$addToSet = {};
+            update.$addToSet['teams.' + teams] = {$each: roles};
+          //});
+          //console.log(update);*/
+          //update.$addToSet = {};
+          //update.$addToSet = { teams: {$each: teams}}
+        //} else {
+        //  update.$addToSet = {teams: {$each: teams}};
+        //}
 
         return update;
       },
-      _updateUserTeams: function(users, teams, updateFactory) {
+      _updateUserTeams: function(users, teams, roles, updateFactory) {
         if (!users) throw new Error("Missing 'users' param");
         if (!teams) throw new Error("Missing 'teams' param");
 
@@ -307,6 +374,7 @@ _.extend(Teams, {
         //ensure arrays to simplify code
         if (!_.isArray(users)) users = [users];
         if (!_.isArray(teams)) teams = [teams];
+        if (!_.isArray(roles)) roles = [roles];
 
         //remove invalid teams
         teams = _.reduce(teams, (memo, team) => {
@@ -349,27 +417,30 @@ _.extend(Teams, {
           return memo;
         }, []);
 
-        //update all users
-        update = updateFactory(teams);
+        //update per Team *make this better*
+        _.each(teams, (team) => {
+          //update all users
+          update = updateFactory(team, roles);
 
-        try {
-          if (Meteor.isClient) {
-            //on client, iterate over each user to fulfill Meteor's
-            //'one update per ID' policy
-            _.each(users, (user) => {
-              Meteor.users.update({_id:user}, update);
-            });
-          } else {
-            //On the server we can use MongoDB's $in operator for
-            //better performance
-            Meteor.users.update({_id:{$in: users}},
+          try {
+            if (Meteor.isClient) {
+              //on client, iterate over each user to fulfill Meteor's
+              //'one update per ID' policy
+              _.each(users, (user) => {
+                Meteor.users.update({_id:user}, update);
+              });
+            } else {
+              //On the server we can use MongoDB's $in operator for
+              //better performance
+              Meteor.users.update({_id:{$in: users}},
                                 update,
                                 {multi:true});
+            }
           }
-        }
-        catch(ex) {
-          throw ex;
-        }
+          catch(ex) {
+            throw ex;
+          }
+        });
       }//end _updateUserTeams
 }); //end _.extend(Teams ...)
 }());

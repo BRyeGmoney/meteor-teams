@@ -39,9 +39,9 @@
           nmsg = username + ' had the following un-expected permission: ' + team;
 
           if (expected) {
-            test.isTrue(Teams.userIsInTeam(userParam, team), msg);
+            test.isTrue(Teams.userIsInTeam(userParam, team, "poop"), msg);
           } else {
-            test.isFalse(Teams.userIsInTeam(userParam, team), nmsg);
+            test.isFalse(Teams.userIsInTeam(userParam, team, "poopNo"), nmsg);
           }
       });
     }
@@ -163,7 +163,7 @@
 
           Meteor.users.update(
             {"_id":users.bo},
-            {$addToSet: { teams: { $each: ['teamA', 'teamB'] } } }
+            { teams: { 'teamA':[null], 'teamB':[null] } }
           );
 
           testUserTeamsOnly(test, 'bo', ['teamA', 'teamB']);
