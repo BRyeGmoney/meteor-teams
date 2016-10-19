@@ -106,7 +106,50 @@ _.extend(Teams, {
       Teams._updateUserTeams(users, teams, null, Teams._update_$set_fn);
     },
     removeUsersFromRolesInTeams: function(users, teams, roles) {
+      var update;
 
+      if (!users) throw new Error("Missing 'users' param");
+      if (!teams) throw new Error("Missing 'teams' param");
+      if (!roles) throw new Error("Missing 'roles' param");
+
+      //ensure arrays
+      if (!_.isArray(users)) users = [users];
+      if (!_.isArray(teams)) teams = [teams];
+      if (!_.isArray(roles)) roles = [roles];
+
+      //ensure users is an array of user ids
+      users = _.reduce(users, function(memo, user) {
+        var _id;
+        if ('string' === typeof user) {
+          memo.push(user);
+        } else if ('object' === typeof user) {
+          _id = user._id;
+          if ('string' === typeof _id) {
+            memo.push(_id);
+          }
+        }
+        return memo;
+      }, []);
+
+      _.each(teams, (team) => {
+        update = {$pullAll: {}};
+        update.$pullAll['teams.'+team] = roles;
+
+        try {
+          if (Meteor.isClient) {
+            //Iterate over each user to fulfill Meteor's 'one update per ID' policy
+            _.each(users, (user) => {
+              Meteor.users.update({_id:user}, update);
+            });
+          } else {
+            //On the serer we can leverage MongoDB's $in operator for performance
+            Meteor.users.update({_id:{$in:users}}, update, {multi:true});
+          }
+        }
+        catch (ex) {
+          throw ex;
+        }
+      });
     },
     removeUsersFromTeams: function (users, teams) {
       var update;
@@ -135,30 +178,21 @@ _.extend(Teams, {
 
       _.each(teams, (team) => {
         //update all users, remove from teams set_fn
-        //update = {$pullAll: {teams: teams}};
         update = {$unset: {}};
-        update.$unset['teams.'+team] = 1
-        //update.$pullAll['teams.'+team];
+        update.$unset['teams.'+team] = 1;
 
         try {
           if (Meteor.isClient) {
             //Iterate over each user to fulfill Meteor's 'one update per ID' policy
             _.each(users, function(user) {
-              console.log(user.teams);
               Meteor.users.update({_id:user}, update);
             });
           } else {
             //On the server we can leverage MongoDB's $in operator for performance
-            console.log(Meteor.users.findOne({_id: users[0]}, {fields: {teams:1} }));
             Meteor.users.update({_id:{$in:users}}, update, {multi:true});
-            console.log(Meteor.users.findOne({_id: users[0]}, {fields: {teams:1} }));
           }
         }
         catch (ex) {
-          /*if (ex.name === 'MongoError' && isMongoMixError(ex.err || ex.errmsg)) {
-            throw new Error (mixingGroupAndNonGroupErrorMsg)
-          }*/
-
           throw ex;
         }
       });
