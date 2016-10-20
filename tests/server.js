@@ -39,9 +39,9 @@
           nmsg = username + ' had the following un-expected permission: ' + team;
 
           if (expected) {
-            test.isTrue(Teams.userIsInTeam(userParam, team, "poop"), msg);
+            test.isTrue(Teams.getUserIsInTeam(userParam, team, "poop"), msg);
           } else {
-            test.isFalse(Teams.userIsInTeam(userParam, team, "poopNo"), nmsg);
+            test.isFalse(Teams.getUserIsInTeam(userParam, team, "poopNo"), nmsg);
           }
       });
     }
@@ -125,6 +125,46 @@
       })
 
       Tinytest.add(
+        'teams - can add and list all user\'s teams',
+        (test) => {
+          reset();
+
+          //Teams.createTeam('teamA');
+          //Teams.createTeam('divisionA', 'teamA');
+          Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
+          test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
+      })
+
+      Tinytest.add(
+        'teams - can add roles/teams to user and ensure roles exist only in that team',
+        (test) => {
+          reset();
+
+          Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
+          test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
+
+          Teams.addUsersToRolesInTeam(users.bo, ['baseUser', 'advantageUser'], 'teamA');
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'advantageUser'] );
+
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'divisionA'), []);
+      })
+
+      Tinytest.add(
+        'teams - can remove roles from a team',
+        (test) => {
+          reset();
+
+          Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
+          test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
+
+          Teams.addUsersToRolesInTeam(users.bo, ['baseUser', 'advantageUser', 'superUser'], 'teamA');
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'advantageUser', 'superUser'] );
+
+          Teams.removeUsersFromRolesInTeams(users.bo, 'teamA', ['advantageUser']);
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'superUser']);
+      })
+
+      Tinytest.add(
         'teams - can check if user is part of higher organization',
         (test) => {
           reset();
@@ -134,9 +174,9 @@
           Teams.createTeam('slave_drivers', 'divisionA');
           Teams.addUsersToTeams(users.bo, ['slave_drivers']);
 
-          test.isFalse(Teams.userIsInTeam(users.bo, 'teamA'));
+          test.isFalse(Teams.getUserIsInTeam(users.bo, 'teamA'));
           test.equal(Teams.getFullPathForTeam('slave_drivers'), 'teamA-divisionA-slave_drivers');
-          test.isTrue(Teams.userBelongsToTeam(users.bo, 'teamA'));
+          test.isTrue(Teams.getUserBelongsToTeam(users.bo, 'teamA'));
       })
 
       Tinytest.add(
@@ -173,7 +213,7 @@
         'teams - can check if user in team that belongs to another team',
         (test) => {
           reset();
-          test.isFalse(Teams.userIsInTeam('1', "teamA"));
+          test.isFalse(Teams.getUserIsInTeam('1', "teamA"));
       })
 
       Tinytest.add(
@@ -182,7 +222,7 @@
           var user = null;
           reset();
 
-          test.isFalse(Teams.userIsInTeam(user, "teamA"));
+          test.isFalse(Teams.getUserIsInTeam(user, "teamA"));
       })
 
       Tinytest.add(
@@ -194,7 +234,7 @@
           Teams.addUsersToTeams(users.bo, ['teamA', 'teamB']);
           user = Meteor.users.findOne({_id:users.bo});
 
-          test.isTrue(Teams.userIsInTeam(user, ['divisionA', 'teamB']));
+          test.isTrue(Teams.getUserIsInTeam(user, ['divisionA', 'teamB']));
         })
 
       Tinytest.add(
@@ -343,7 +383,7 @@
             testUserTeamsOnly(test, 'bo', ['teamA', 'teamB']);
             testUserTeamsOnly(test, 'jangles', ['teamA', 'teamB']);
 
-            test.isFalse(Teams.userIsInTeam(users.junior, 'teamA'));
+            test.isFalse(Teams.getUserIsInTeam(users.junior, 'teamA'));
             Teams.addUsersToTeams([users.bo, users.junior], ['teamA', 'divisionA']);
             testUserTeamsOnly(test, 'bo', ['teamA', 'teamB', 'divisionA']);
             testUserTeamsOnly(test, 'junior', ['teamA', 'divisionA']);

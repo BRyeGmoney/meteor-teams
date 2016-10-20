@@ -199,8 +199,6 @@ _.extend(Teams, {
     },
     getPathForTeam: function(teamName) {
       if (typeof teamName === 'string') {
-        //console.log(teamName);
-        //console.log(Meteor.teams.findOne({name: teamName}).path);
         return Meteor.teams.findOne({name: teamName}).path;
       } else {
         throw new Error('Passed in param \'teamName\' is not a string');
@@ -228,7 +226,7 @@ _.extend(Teams, {
         return teams;
       }
     },
-    isAncestorForTeam: function(team, potentialAncestor) {
+    _isAncestorForTeam: function(team, potentialAncestor) {
       if (typeof team === 'string') {
         return Teams.getFullPathForTeam(team).includes(potentialAncestor);
       } else if (typeof team === 'object') {
@@ -237,7 +235,7 @@ _.extend(Teams, {
         return false;
       }
     },
-    userBelongsToTeam: function(user, teams) {
+    getUserBelongsToTeam: function(user, teams) {
       var id,
           userTeams,
           query,
@@ -259,25 +257,16 @@ _.extend(Teams, {
         if (!_.isArray(userTeams)) userTeams = [userTeams];
 
         if (_.isArray(userTeams)) {
-          /*for(var i = 0; i < userTeams.length; i++) {
-            if (userTeams[i])
-          }*/
-          /*return _.some(userTeams, function(userTeam) {
-            return _.some(teams, function(team) {
-              return Teams.isAncestorForTeam(userTeam, team);
-            });
-          });*/
 
           return _.some(teams, function(team) {
             return _.some(userTeams, function(userTeam) {
-              return Teams.isAncestorForTeam(userTeam, team);
-            })
-            //return isAncestorForTeam(userTeams)//_.contains(userTeams, team);
+              return Teams._isAncestorForTeam(userTeam, team);
+            });
           });
         }
       }
     },
-    userIsInTeam: function(user, teams, op) {
+    getUserIsInTeam: function(user, teams) {
       var id,
           userTeams,
           query,
@@ -285,7 +274,6 @@ _.extend(Teams, {
 
       //ensure array to simplify code
       if (!_.isArray(teams)) {
-        //console.log(teams);
         teams = [teams];
       }
 
@@ -293,22 +281,13 @@ _.extend(Teams, {
 
       if ('object' === typeof user) {
         userTeams = user.teams;
-        //console.log(userTeams);
 
         if (_.isArray(userTeams)) {
           return _.some(teams, function(team) {
             return _.contains(userTeams, team);
           });
         } else if (userTeams && 'object' === typeof userTeams) {
-          //teams is a dictionary
-          //console.log(op + ": " + userTeams);
           return _.some(teams, (team) => {
-            /*if (userTeams[team]) {
-              console.log('team: ' + team + ', userTeams: ' + Object.keys(userTeams) + ', in: true');
-            } else {
-              console.log('team: ' + team + ', userTeams: ' + Object.keys(userTeams) + ', in: false');
-            }*/
-
             return userTeams[team] ? true : false;
           });
 
@@ -329,19 +308,69 @@ _.extend(Teams, {
         teamQuery = {};
         teamQuery['teams.' + team] = {$exists:true};
         query.$or.push(teamQuery);
-      })
-
-      //structure of query
-      //Teams
-      //  {_id: id,
-      //   $or: [
-      //     {teams: {$in: ['teamA']}}
-      //   ]
-      // }
-      //query = {_id: id, teams: {$in: teams}};
+      });
 
       found = Meteor.users.findOne(query, {fields: {_id:1}});
       return found ? true : false;
+    },
+    getAllTeams: function() {
+      return Meteor.teams.find({}, {sort: {name:1}});
+    },
+    getRolesInTeamForUser: function(user, team) {
+      if (!user) return [];
+      if (!team) return [];
+
+      if ('string' === typeof user) {
+         user = Meteor.users.findOne(
+                  {_id: user},
+                  {fields: {teams:1}});
+      } else if ('object' !== typeof user) {
+        //invalid user object
+        return [];
+      }
+
+      //User has no teams
+      if (!user || !user.teams || _.isArray(user.teams)) return [];
+
+      return user.teams[team];
+    },
+    getTeamNamesForUser: function(user, role) {
+      return Object.keys(Teams.getTeamsForUser(user, role));
+    },
+    getTeamsForUser: function(user, role) {
+      var userTeams = [];
+
+      if (!user) return [];
+      if (role) {
+        if ('string' === typeof role) return [];
+        if ('$' === role[0]) return [];
+
+        //convert any periods to underscores
+        role = role.replace('.', '_');
+      }
+
+      if ('string' === typeof user) {
+         user = Meteor.users.findOne(
+                  {_id: user},
+                  {fields: {teams:1}});
+      } else if ('object' !== typeof user) {
+        //invalid user object
+        return [];
+      }
+
+      //User has no teams
+      if (!user || !user.teams || _.isArray(user.teams)) return [];
+
+      if (role) {
+        _.each(user.teams, (teamRoles, teamName) => {
+          if (_.contains(teamRoles, role)) {
+            userTeams.push(teamName);
+          }
+        });
+        return userTeams;
+      } else {
+        return user.teams;//_.without(_.keys(user.teams)
+      }
     },
     /**
      * Private function 'template' that uses $set to construct an update object
@@ -352,21 +381,11 @@ _.extend(Teams, {
      * @param {Array} teams
      * @return {Object} update object for use in MongoDB update command
      */
-     _update_$set_fn: function (teams, roles) {
+     _update_$set_fn: function (team, roles) {
        var update = {};
 
-       //if (roles) {
-
-         //_.each(teams, (team) => {
-           update.$set = {};
-           update.$set['teams.' + team] = roles;
-
-         //});
-
-         //console.log(update);
-       //} else {
-      //   update.$set= {teams:teams};
-       //}
+       update.$set = {};
+       update.$set['teams.' + team] = _.without(roles, null);
 
        return update;
      },
@@ -379,24 +398,20 @@ _.extend(Teams, {
       * @param {Array} teams
       * @return {Object} update object for use in MongoDB update command
       */
-      _update_$addToSet_fn: function(teams, roles) {
+      _update_$addToSet_fn: function(team, roles) {
         var update = {};
 
-        //if (roles) {
-
-          //_.each(teams, (team) => {
-            update.$addToSet = {};
-            update.$addToSet['teams.' + teams] = {$each: roles};
-          //});
-          //console.log(update);*/
-          //update.$addToSet = {};
-          //update.$addToSet = { teams: {$each: teams}}
-        //} else {
-        //  update.$addToSet = {teams: {$each: teams}};
-        //}
+        update.$addToSet = {};
+        update.$addToSet['teams.' + team] = {$each: _.without(roles, null)};
 
         return update;
       },
+      /*_updateMulti_$addToSet_fn: function(teams) {
+        var update = {};
+
+        update.$addToSet = {};
+        update.$addToSet
+      }*/
       _updateUserTeams: function(users, teams, roles, updateFactory) {
         if (!users) throw new Error("Missing 'users' param");
         if (!teams) throw new Error("Missing 'teams' param");

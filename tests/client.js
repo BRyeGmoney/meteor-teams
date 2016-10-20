@@ -30,9 +30,9 @@
           nmsg = username + ' had un-expected permssion ' + team;
 
       if (expected) {
-        test.isTrue(Teams.userIsInTeam(user, team), msg);
+        test.isTrue(Teams.getUserIsInTeam(user, team), msg);
       } else {
-        test.isFalse(Teams.userIsInTeam(user, team), nmsg);
+        test.isFalse(Teams.getUserIsInTeam(user, team), nmsg);
       }
     });
   }
