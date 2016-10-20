@@ -165,6 +165,22 @@
       })
 
       Tinytest.add(
+        'teams - can check if user has specific role in any teams',
+        (test) => {
+          reset();
+
+          Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
+          test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
+
+          Teams.addUsersToRolesInTeam(users.bo, ['baseUser', 'advantageUser', 'superUser'], 'teamA');
+          Teams.addUsersToRolesInTeam(users.bo, ['baseUser'], 'divisionA');
+
+          test.isTrue(Teams.userHasRolesInTeam(users.bo, 'baseUser', 'divisionA'));
+          test.isFalse(Teams.userHasRolesInTeam(users.bo, 'advantageUser', 'divisionA'));
+          test.isTrue(Teams.userHasRolesInTeam(users.bo, ['baseUser', 'superUser'], 'teamA'));
+      })
+
+      Tinytest.add(
         'teams - can check if user is part of higher organization',
         (test) => {
           reset();

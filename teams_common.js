@@ -266,6 +266,18 @@ _.extend(Teams, {
         }
       }
     },
+    userHasRolesInTeam: function(user, roles, teams) {
+      var hasRole = false;
+
+      if (!_.isArray(teams)) teams = [teams];
+      if (!_.isArray(roles)) roles = [roles];
+
+      return _.some(teams, (team) => {
+        return _.some(roles, (role) => {
+          return _.contains(Teams.getRolesInTeamForUser(user, team), role);
+        });
+      });
+    },
     userIsInTeam: function(user, teams) {
       var id,
           userTeams,
