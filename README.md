@@ -2,7 +2,7 @@
 
 This package is definitely based on the same ideas as alanning:roles but with teams "groups" taking center stage. This allows me to use mongo's materialized paths pattern to allow for a hierarchy between teams.
 
-0.2.1 Functions Supported:
+0.2.2 Functions Supported:
 * createTeam(team [, owningTeam])
 * deleteTeam(team)
 * addUsersToRolesInTeam(users, roles, team)
@@ -12,8 +12,6 @@ This package is definitely based on the same ideas as alanning:roles but with te
 * removeUsersFromTeams(users, teams)
 * userBelongsToTeam(user, teams)
 * userIsInTeam(user, teams)
-* getPathForTeam(teamName)
-* getFullPathForTeam(teamName)
 * getAllTeamsUnderTeam(team)
 * getTeamNamesForUser(user [, role])
 * getTeamsForUser(user [, role])
