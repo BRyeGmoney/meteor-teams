@@ -47,7 +47,7 @@ _.extend(Teams, {
          if (typeof owningTeam === 'object') owningTeam = owningTeam.name;
 
          id = Meteor.teams.insert({'name': teamNameToInsert,
-                                   'path': Teams.getFullPathForTeam(owningTeam) });
+                                   'path': Teams._getFullPathForTeam(owningTeam) });
        }
        return id;
      } catch(e) {
@@ -197,16 +197,16 @@ _.extend(Teams, {
         }
       });
     },
-    getPathForTeam: function(teamName) {
+    _getPathForTeam: function(teamName) {
       if (typeof teamName === 'string') {
         return Meteor.teams.findOne({name: teamName}).path;
       } else {
         throw new Error('Passed in param \'teamName\' is not a string');
       }
     },
-    getFullPathForTeam: function(teamName) {
+    _getFullPathForTeam: function(teamName) {
       if (typeof teamName === 'string') {
-        let path = Teams.getPathForTeam(teamName);
+        let path = Teams._getPathForTeam(teamName);
         if (path) { //we just concatenate the team name to it's path
           return path + '-' + teamName;
         } else { //there is no path for this team
@@ -228,14 +228,14 @@ _.extend(Teams, {
     },
     _isAncestorForTeam: function(team, potentialAncestor) {
       if (typeof team === 'string') {
-        return Teams.getFullPathForTeam(team).includes(potentialAncestor);
+        return Teams._getFullPathForTeam(team).includes(potentialAncestor);
       } else if (typeof team === 'object') {
-        return Teams.getFullPathForTeam(Object.keys(team)[0]).includes(potentialAncestor);
+        return Teams._getFullPathForTeam(Object.keys(team)[0]).includes(potentialAncestor);
       } else {
         return false;
       }
     },
-    getUserBelongsToTeam: function(user, teams) {
+    userBelongsToTeam: function(user, teams) {
       var id,
           userTeams,
           query,
@@ -266,7 +266,7 @@ _.extend(Teams, {
         }
       }
     },
-    getUserIsInTeam: function(user, teams) {
+    userIsInTeam: function(user, teams) {
       var id,
           userTeams,
           query,

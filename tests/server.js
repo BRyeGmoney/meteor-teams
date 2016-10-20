@@ -39,9 +39,9 @@
           nmsg = username + ' had the following un-expected permission: ' + team;
 
           if (expected) {
-            test.isTrue(Teams.getUserIsInTeam(userParam, team, "poop"), msg);
+            test.isTrue(Teams.userIsInTeam(userParam, team, "poop"), msg);
           } else {
-            test.isFalse(Teams.getUserIsInTeam(userParam, team, "poopNo"), nmsg);
+            test.isFalse(Teams.userIsInTeam(userParam, team, "poopNo"), nmsg);
           }
       });
     }
@@ -174,9 +174,9 @@
           Teams.createTeam('slave_drivers', 'divisionA');
           Teams.addUsersToTeams(users.bo, ['slave_drivers']);
 
-          test.isFalse(Teams.getUserIsInTeam(users.bo, 'teamA'));
-          test.equal(Teams.getFullPathForTeam('slave_drivers'), 'teamA-divisionA-slave_drivers');
-          test.isTrue(Teams.getUserBelongsToTeam(users.bo, 'teamA'));
+          test.isFalse(Teams.userIsInTeam(users.bo, 'teamA'));
+          //test.equal(Teams.getFullPathForTeam('slave_drivers'), 'teamA-divisionA-slave_drivers');
+          test.isTrue(Teams.userBelongsToTeam(users.bo, 'teamA'));
       })
 
       Tinytest.add(
@@ -213,7 +213,7 @@
         'teams - can check if user in team that belongs to another team',
         (test) => {
           reset();
-          test.isFalse(Teams.getUserIsInTeam('1', "teamA"));
+          test.isFalse(Teams.userIsInTeam('1', "teamA"));
       })
 
       Tinytest.add(
@@ -222,7 +222,7 @@
           var user = null;
           reset();
 
-          test.isFalse(Teams.getUserIsInTeam(user, "teamA"));
+          test.isFalse(Teams.userIsInTeam(user, "teamA"));
       })
 
       Tinytest.add(
@@ -234,7 +234,7 @@
           Teams.addUsersToTeams(users.bo, ['teamA', 'teamB']);
           user = Meteor.users.findOne({_id:users.bo});
 
-          test.isTrue(Teams.getUserIsInTeam(user, ['divisionA', 'teamB']));
+          test.isTrue(Teams.userIsInTeam(user, ['divisionA', 'teamB']));
         })
 
       Tinytest.add(
@@ -383,7 +383,7 @@
             testUserTeamsOnly(test, 'bo', ['teamA', 'teamB']);
             testUserTeamsOnly(test, 'jangles', ['teamA', 'teamB']);
 
-            test.isFalse(Teams.getUserIsInTeam(users.junior, 'teamA'));
+            test.isFalse(Teams.userIsInTeam(users.junior, 'teamA'));
             Teams.addUsersToTeams([users.bo, users.junior], ['teamA', 'divisionA']);
             testUserTeamsOnly(test, 'bo', ['teamA', 'teamB', 'divisionA']);
             testUserTeamsOnly(test, 'junior', ['teamA', 'divisionA']);
