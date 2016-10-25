@@ -325,6 +325,24 @@ _.extend(Teams, {
       found = Meteor.users.findOne(query, {fields: {_id:1}});
       return found ? true : false;
     },
+    getDirectMembersOfTeams: function(teamNames) {
+      if (!_.isArray(teamNames)) teamNames = [teamNames];
+      let response = [];
+
+      _.each(teamNames, (teamName) => {
+        let query = {};
+        query['teams.' + teamName] = {$exists:true};
+
+        response = response.concat(Meteor.users.find(query, {fields: {_id: 1}}).fetch());
+      });
+
+      return _.uniq(response);
+    },
+    getAllMembersOfTeam: function(teamName) {
+      if (!teamName) return [];
+      throw new Error("This function is not yet implemented");
+      return false;
+    },
     getAllTeams: function() {
       return Meteor.teams.find({}, {sort: {name:1}});
     },

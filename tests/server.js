@@ -136,6 +136,32 @@
       })
 
       Tinytest.add(
+        'teams - can add users to a team and get all their ids back',
+        (test) => {
+          reset();
+
+          Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
+          Teams.addUsersToTeams(users.jangles, ['teamA']);
+          Teams.addUsersToTeams(users.junior, ['teamA', 'divisionA']);
+
+          test.equal(Teams.getDirectMembersOfTeams('teamA').length, 3);
+          test.equal(Teams.getDirectMembersOfTeams('divisionA').length, 2);
+      })
+
+      Tinytest.add(
+        'teams - can add users to teams and query multiple teams for one continuous list of user id\'s',
+        (test) => {
+          reset();
+
+          Teams.addUsersToTeams(users.bo, ['teamA']);
+          Teams.addUsersToTeams(users.jangles, ['teamA']);
+          Teams.addUsersToTeams(users.junior, ['divisionA']);
+
+          test.equal(Teams.getDirectMembersOfTeams(['teamA', 'divisionA']).length, 3);
+        }
+      )
+
+      Tinytest.add(
         'teams - can add roles/teams to user and ensure roles exist only in that team',
         (test) => {
           reset();
