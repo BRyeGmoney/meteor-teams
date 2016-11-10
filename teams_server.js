@@ -1,14 +1,14 @@
 "use strict"
 
 /**
- * Teams collection documents consist of a cascading tree
- * defining a team's structure.
- * ex: { _id: "123", name: "teamA",
- *       teams: [
- *               { _id: "234", name: "division1", teams:[]},
- *               { _id: "456", name: "division2", teams:[]},
+ * Teams collection documents consist of a unique name and a path denoting
+ * teams higher in that team's hierarchy
+ * ex: { _id: "123", name: "teamA", path: ""
+ *     { _id: "234", name: "division1", path:"teamA"},
+ *     { _id: "456", name: "slave_drivers", path:"teamA-division1"},
+ *     { _id: '789', name: "division2", path:"teamA"},
  *               ...
- *              ]} Holy smokes!
+ *  Holy smokes!
  */
 if (!Meteor.teams) {
   Meteor.teams = new Mongo.Collection("teams");
@@ -33,3 +33,7 @@ Meteor.publish('_teams', function() {
   return Meteor.users.find({_id: loggedInUserId},
                            {fields: fields});
 });
+
+/*Meteor.publish('_allTeams', function() {
+  return Teams.find({ path:'' }, {fields: { 'name':1 }}).fetch();
+});*/

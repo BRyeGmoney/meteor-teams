@@ -343,6 +343,12 @@ _.extend(Teams, {
       throw new Error("This function is not yet implemented");
       return false;
     },
+    getTopLevelTeam: function(teamName) {
+      return Meteor.teams.findOne({ name: teamName, path: ''});
+    },
+    getAllTopLevelTeams: function() {
+      return Meteor.teams.find({path: { $eq: '' }}).fetch();
+    },
     getAllTeams: function() {
       return Meteor.teams.find({}, {sort: {name:1}});
     },

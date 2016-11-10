@@ -162,6 +162,22 @@
       )
 
       Tinytest.add(
+        'teams - can add team and retrieve it if top level',
+        (test) => {
+          reset();
+
+          Teams.createTeam('teamA');
+          Teams.createTeam('teamB');
+          Teams.createTeam('divisionA', 'teamA');
+
+          test.equal(Teams.getTopLevelTeam('teamA').name, 'teamA');
+          test.equal(Teams.getTopLevelTeam('divisionA'), undefined);
+
+          test.equal(Teams.getAllTopLevelTeams().length, 2);
+        }
+      )
+
+      Tinytest.add(
         'teams - can add roles/teams to user and ensure roles exist only in that team',
         (test) => {
           reset();

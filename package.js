@@ -1,8 +1,8 @@
 Package.describe({
   name: 'bgromadzki:meteor-teams',
-  version: '0.2.4',
+  version: '0.2.5',
   // Brief, one-line summary of the package.
-  summary: 'Additional "hierarchy" style authorization (using mongo materialized paths pattern) features',
+  summary: 'Hierarchy style authorization (using mongo materialized paths pattern)',
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/BRyeGmoney/meteor-teams.git',
   // By default, Meteor will default to using README.md for documentation.
