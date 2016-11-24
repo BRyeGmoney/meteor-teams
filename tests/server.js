@@ -323,7 +323,7 @@
         })
 
       Tinytest.add(
-        'teams - can add user to roles via user object',
+        'teams - can add user to teams via user object',
         (test) => {
           reset();
 
@@ -452,5 +452,45 @@
           }
         )
 
+        Tinytest.add(
+          'teams - can not add a team to a parent team if parent team doesn\'t exist',
+          (test) => {
+            reset();
+
+            Teams.createTeam('teamB');
+            test.throws(() => { Teams.createTeam('divisionA', 'teamA') });
+
+            test.isTrue(Meteor.teams.findOne({'name':'teamB'}));
+            test.isTrue(!Meteor.teams.findOne({'name':'divisionA'}));
+          }
+        )
+
+        Tinytest.add(
+          'teams - can add team within team and assign role to a user in child team',
+          (test) => {
+            reset();
+            Teams.createTeam('teamA');
+            Teams.createTeam('divisionA', 'teamA');
+
+            test.isTrue(Meteor.teams.find().fetch().length == 2);
+            Teams.addUsersToRolesInTeam([users.bo], 'role-guy', 'divisionA');
+
+            test.isTrue(Teams.userIsInTeam(users.bo,'divisionA'));
+          }
+        )
+
+        Tinytest.add(
+          'teams - can add team within team and assign role to a user in child team WITH weird name',
+          (test) => {
+            reset();
+            Teams.createTeam('teamA');
+            Teams.createTeam("Dog Owner's Club/Johns", 'teamA');
+
+            test.isTrue(Meteor.teams.find().fetch().length == 2);
+            Teams.addUsersToRolesInTeam([users.bo], 'role-guy', "Dog Owner's Club/Johns");
+
+            test.isTrue(Teams.userIsInTeam(users.bo,"Dog Owner's Club/Johns"));
+          }
+        )
 
 }());

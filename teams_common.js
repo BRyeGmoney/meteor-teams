@@ -29,7 +29,7 @@ _.extend(Teams, {
    * @param {String} owningTeam id of owning team
    * @return {String} id of new team
    */
-   createTeam: function (team, owningTeam) {
+   createTeam: function (team, parentTeam) {
      var id,
          match;
 
@@ -38,16 +38,20 @@ _.extend(Teams, {
          || team.trim().length == 0) {
            return;
      }
-     var teamNameToInsert = team.trim().replace(/\s/g, '_');
+     var teamNameToInsert = team.trim();//.replace(/\s/g, '_');
      try {
-       if (!owningTeam) {
+       if (!parentTeam) {
          id = Meteor.teams.insert({'name': teamNameToInsert, 'path': '' });
        } else {
 
-         if (typeof owningTeam === 'object') owningTeam = owningTeam.name;
+         if (typeof parentTeam === 'object') parentTeam = parentTeam.name;
+
+         if (!Meteor.teams.findOne({'name': parentTeam})) {
+           throw new Meteor.Error(500, "Parent team does not exist.");
+         }
 
          id = Meteor.teams.insert({'name': teamNameToInsert,
-                                   'path': Teams._getFullPathForTeam(owningTeam) });
+                                   'path': Teams._getFullPathForTeam(parentTeam) });
        }
        return id;
      } catch(e) {
@@ -55,7 +59,7 @@ _.extend(Teams, {
        // XXX string parsing sucks, maybe
        // https://jira.mongodb.org/browse/SERVER-3069 will get fixed one day
        if (/E1100 duplicate key error.*(index.*teams|teams.*index).*name/.test(e.err || e.errmsg)) {
-         throw new Error("Team '" + teamNameToInsert + "' already exists.");
+         throw new Meteor.Error(500, "Team '" + teamNameToInsert + "' already exists.");
        } else {
          throw e;
        }
@@ -523,6 +527,7 @@ _.extend(Teams, {
             }
           }
           catch(ex) {
+            console.log(ex);
             throw ex;
           }
         });
