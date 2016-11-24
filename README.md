@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/BRyeGmoney/meteor-teams.svg?branch=master)](https://travis-ci.org/BRyeGmoney/meteor-teams)
 
-## Base
+## Base: ##
 
 This package is definitely based on the same ideas as alanning:roles but with teams (aka groups) taking center stage. This allows me to use mongo's materialized paths pattern to allow for a hierarchy between teams.
 
-## INFO:
+## INFO: ##
 
 Using this package, you can create multi-tiered organizations that users can be a part of. Each team has its own specific set of roles that are assigned loosely to users. Maybe in the future
 it'll turn out that enforcing these more strictly will be a good idea, but for now its your own fault if you have one user with role: admin and another with role:adin and you can't get the
