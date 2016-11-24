@@ -16,9 +16,9 @@ Anything you have currently should work just fine, but any future entries will b
 
 
 ## FUTURE UPDATES:
--Better documentation
--Remove need for unique team names, i should be able to have Dog Lovers->owners and Cat Lovers->owners without them stepping on each other's toes
--Feel free to shoot me a message on github/open an issue/whatever for anything you think needs to be in this package
+* Better documentation
+* Remove need for unique team names, i should be able to have Dog Lovers->owners and Cat Lovers->owners without them stepping on each other's toes
+* Feel free to shoot me a message on github/open an issue/whatever for anything you think needs to be in this package
 
 ## 0.2.6 Functions Supported:
 * createTeam(team [, owningTeam])
