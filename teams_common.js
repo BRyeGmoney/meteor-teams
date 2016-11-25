@@ -230,6 +230,18 @@ _.extend(Teams, {
         return teams;
       }
     },
+    getTeamsDirectlyUnderTeam: function(team) {
+      if (typeof team === 'object') {
+        team = team.name;
+      }
+
+      if (typeof team === 'string') {
+        let teams = Meteor.teams.find({ 'path': new RegExp(team+"$") },
+                      { fields: {_id: 0, name:1}}).fetch();
+
+        return teams;
+      }
+    },
     _isAncestorForTeam: function(team, potentialAncestor) {
       if (typeof team === 'string') {
         return Teams._getFullPathForTeam(team).includes(potentialAncestor);

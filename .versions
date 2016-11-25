@@ -4,7 +4,7 @@ allow-deny@1.0.5
 babel-compiler@6.9.1_1
 babel-runtime@0.1.11_1
 base64@1.0.9
-bgromadzki:meteor-teams@0.2.5
+bgromadzki:meteor-teams@0.2.6
 binary-heap@1.0.9
 blaze@2.1.9
 blaze-tools@1.0.10
@@ -27,7 +27,7 @@ html-tools@1.0.11
 htmljs@1.0.11
 id-map@1.0.8
 jquery@1.11.9
-local-test:bgromadzki:meteor-teams@0.2.5
+local-test:bgromadzki:meteor-teams@0.2.6
 localstorage@1.0.11
 logging@1.1.15_1
 meteor@1.2.17_1

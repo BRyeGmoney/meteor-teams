@@ -493,4 +493,31 @@
           }
         )
 
+        Tinytest.add(
+          'teams - can get list of sub teams directly under desired parent',
+          (test) => {
+            reset();
+
+            var testTeam = "Dog Owner's Club/Johns";
+
+            Teams.createTeam('teamA');
+            Teams.createTeam(testTeam, 'teamA');
+            Teams.createTeam('divisionA', 'teamA');
+            Teams.createTeam('slave_drivers', 'divisionA');
+
+            var underTeamATeams = Teams.getTeamsDirectlyUnderTeam('teamA');
+
+            test.isTrue(underTeamATeams.length == 2);
+            test.isTrue(() => {
+              var canfindteam = false;
+
+              for (var x = 0; x < underTeamATeams.length; x++) {
+                if (underTeamATeams[x].name == testTeam) {
+                  canfindteam = true;
+                }
+              }
+              return canfindteam;
+            });
+          }
+        )
 }());

@@ -8,7 +8,7 @@ This package is definitely based on the same ideas as alanning:roles but with te
 
 Using this package, you can create multi-tiered organizations that users can be a part of. Each team has its own specific set of roles that are assigned loosely to users. Maybe in the future
 it'll turn out that enforcing these more strictly will be a good idea, but for now its your own fault if you have one user with role: admin and another with role:adin and you can't get the
-second guy to see stuff he should. 
+second guy to see stuff he should.
 
 ## NOTE:
 
@@ -37,6 +37,7 @@ Anything you have currently should work just fine, but any future entries will b
 * userHasRolesInTeam(user, roles, teams)
 * userIsInTeam(user, teams)
 * getDirectMembersOfTeams(teams)
+* getTeamsDirectlyUnderTeam(team)
 * getAllTeamsUnderTeam(team)
 * getTeamNamesForUser(user [, role])
 * getTeamsForUser(user [, role])
