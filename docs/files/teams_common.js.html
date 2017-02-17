@@ -1,3 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>teams_common.js - Meteor Teams</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="Meteor Teams" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.3.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Teams.html">Teams</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/Teams.html">Teams</a></li>
+                                <li><a href="../modules/UIHelpers.html">UIHelpers</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: teams_common.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
 ;(function() {
 
 /**
@@ -8,25 +92,25 @@
 
  /**
   * Teams collection documents consist of an id, team name and mongo materialized path
-  *   ex: { _id:<uuid>, name: "teamName", path: "parentTeams" }
+  *   ex: { _id:&lt;uuid&gt;, name: &quot;teamName&quot;, path: &quot;parentTeams&quot; }
   */
 if (!Meteor.teams) {
-  Meteor.teams = new Mongo.Collection("teams");
+  Meteor.teams = new Mongo.Collection(&quot;teams&quot;);
 }
 
 /**
  * Authorization package compatible with built-in Meteor accounts system.
  *
- * Stores user's current roles and team associations in a 'teams' field on the user object.
+ * Stores user&#x27;s current roles and team associations in a &#x27;teams&#x27; field on the user object.
  *
  * @class Teams
  * @constructor
  */
-if ('undefined' === typeof Teams) {
+if (&#x27;undefined&#x27; === typeof Teams) {
   Teams = {};
 }
 
-"use strict";
+&quot;use strict&quot;;
 
 _.extend(Teams, {
   /**
@@ -42,24 +126,24 @@ _.extend(Teams, {
          match;
 
      if (!team
-         || 'string' !== typeof team
+         || &#x27;string&#x27; !== typeof team
          || team.trim().length == 0) {
            return;
      }
-     var teamNameToInsert = team.trim();//.replace(/\s/g, '_');
+     var teamNameToInsert = team.trim();//.replace(/\s/g, &#x27;_&#x27;);
      try {
        if (!parentTeam) {
-         id = Meteor.teams.insert({'name': teamNameToInsert, 'path': '' });
+         id = Meteor.teams.insert({&#x27;name&#x27;: teamNameToInsert, &#x27;path&#x27;: &#x27;&#x27; });
        } else {
 
-         if (typeof parentTeam === 'object') parentTeam = parentTeam.name;
+         if (typeof parentTeam === &#x27;object&#x27;) parentTeam = parentTeam.name;
 
-         if (!Meteor.teams.findOne({'name': parentTeam})) {
-           throw new Meteor.Error(500, "Parent team does not exist.");
+         if (!Meteor.teams.findOne({&#x27;name&#x27;: parentTeam})) {
+           throw new Meteor.Error(500, &quot;Parent team does not exist.&quot;);
          }
 
-         id = Meteor.teams.insert({'name': teamNameToInsert,
-                                   'path': Teams._getFullPathForTeam(parentTeam) });
+         id = Meteor.teams.insert({&#x27;name&#x27;: teamNameToInsert,
+                                   &#x27;path&#x27;: Teams._getFullPathForTeam(parentTeam) });
        }
        return id;
      } catch(e) {
@@ -67,14 +151,14 @@ _.extend(Teams, {
        // XXX string parsing sucks, maybe
        // https://jira.mongodb.org/browse/SERVER-3069 will get fixed one day
        if (/E1100 duplicate key error.*(index.*teams|teams.*index).*name/.test(e.err || e.errmsg)) {
-         throw new Meteor.Error(500, "Team '" + teamNameToInsert + "' already exists.");
+         throw new Meteor.Error(500, &quot;Team &#x27;&quot; + teamNameToInsert + &quot;&#x27; already exists.&quot;);
        } else {
          throw e;
        }
      }
    },
    /**
-    * Delete an existing team. Will throw "Team in use" error if any users
+    * Delete an existing team. Will throw &quot;Team in use&quot; error if any users
     * are currently assigned to the target team.
     *
     * @method deleteTeam
@@ -90,8 +174,8 @@ _.extend(Teams, {
       var foundSubTeam = Teams.getAllTeamsUnderTeam(team);
 
 
-      if (foundExistingUser || foundSubTeam.length > 0) {
-        throw new Meteor.Error(403, 'Team in use');
+      if (foundExistingUser || foundSubTeam.length &gt; 0) {
+        throw new Meteor.Error(403, &#x27;Team in use&#x27;);
       }
 
       var thisTeam = Meteor.teams.findOne({name: team});
@@ -157,9 +241,9 @@ _.extend(Teams, {
     removeUsersFromRolesInTeams: function(users, roles, teams) {
       var update;
 
-      if (!users) throw new Error("Missing 'users' param");
-      if (!teams) throw new Error("Missing 'teams' param");
-      if (!roles) throw new Error("Missing 'roles' param");
+      if (!users) throw new Error(&quot;Missing &#x27;users&#x27; param&quot;);
+      if (!teams) throw new Error(&quot;Missing &#x27;teams&#x27; param&quot;);
+      if (!roles) throw new Error(&quot;Missing &#x27;roles&#x27; param&quot;);
 
       //ensure arrays
       if (!_.isArray(users)) users = [users];
@@ -169,29 +253,29 @@ _.extend(Teams, {
       //ensure users is an array of user ids
       users = _.reduce(users, function(memo, user) {
         var _id;
-        if ('string' === typeof user) {
+        if (&#x27;string&#x27; === typeof user) {
           memo.push(user);
-        } else if ('object' === typeof user) {
+        } else if (&#x27;object&#x27; === typeof user) {
           _id = user._id;
-          if ('string' === typeof _id) {
+          if (&#x27;string&#x27; === typeof _id) {
             memo.push(_id);
           }
         }
         return memo;
       }, []);
 
-      _.each(teams, (team) => {
+      _.each(teams, (team) =&gt; {
         update = {$pullAll: {}};
-        update.$pullAll['teams.'+team] = roles;
+        update.$pullAll[&#x27;teams.&#x27;+team] = roles;
 
         try {
           if (Meteor.isClient) {
-            //Iterate over each user to fulfill Meteor's 'one update per ID' policy
-            _.each(users, (user) => {
+            //Iterate over each user to fulfill Meteor&#x27;s &#x27;one update per ID&#x27; policy
+            _.each(users, (user) =&gt; {
               Meteor.users.update({_id:user}, update);
             });
           } else {
-            //On the serer we can leverage MongoDB's $in operator for performance
+            //On the serer we can leverage MongoDB&#x27;s $in operator for performance
             Meteor.users.update({_id:{$in:users}}, update, {multi:true});
           }
         }
@@ -210,8 +294,8 @@ _.extend(Teams, {
     removeUsersFromTeams: function (users, teams) {
       var update;
 
-      if (!users) throw new Error("Missing 'users' param");
-      if (!teams) throw new Error("Missing 'teams' param");
+      if (!users) throw new Error(&quot;Missing &#x27;users&#x27; param&quot;);
+      if (!teams) throw new Error(&quot;Missing &#x27;teams&#x27; param&quot;);
 
 
       //ensure arrays
@@ -221,30 +305,30 @@ _.extend(Teams, {
       //ensure users is an array of user ids
       users = _.reduce(users, function (memo, user) {
         var _id
-        if ('string' === typeof user) {
+        if (&#x27;string&#x27; === typeof user) {
           memo.push(user)
-        } else if ('object' === typeof user) {
+        } else if (&#x27;object&#x27; === typeof user) {
           _id = user._id
-          if ('string' === typeof _id) {
+          if (&#x27;string&#x27; === typeof _id) {
             memo.push(_id)
           }
         }
         return memo
       }, []);
 
-      _.each(teams, (team) => {
+      _.each(teams, (team) =&gt; {
         //update all users, remove from teams set_fn
         update = {$unset: {}};
-        update.$unset['teams.'+team] = 1;
+        update.$unset[&#x27;teams.&#x27;+team] = 1;
 
         try {
           if (Meteor.isClient) {
-            //Iterate over each user to fulfill Meteor's 'one update per ID' policy
+            //Iterate over each user to fulfill Meteor&#x27;s &#x27;one update per ID&#x27; policy
             _.each(users, function(user) {
               Meteor.users.update({_id:user}, update);
             });
           } else {
-            //On the server we can leverage MongoDB's $in operator for performance
+            //On the server we can leverage MongoDB&#x27;s $in operator for performance
             Meteor.users.update({_id:{$in:users}}, update, {multi:true});
           }
         }
@@ -258,10 +342,10 @@ _.extend(Teams, {
       * passed in.
     */
     _getPathForTeam: function(teamName) {
-      if (typeof teamName === 'string') {
+      if (typeof teamName === &#x27;string&#x27;) {
         return Meteor.teams.findOne({name: teamName}).path;
       } else {
-        throw new Error('Passed in param \'teamName\' is not a string');
+        throw new Error(&#x27;Passed in param \&#x27;teamName\&#x27; is not a string&#x27;);
       }
     },
     /*
@@ -269,10 +353,10 @@ _.extend(Teams, {
       * passed in along with the team itself.
     */
     _getFullPathForTeam: function(teamName) {
-      if (typeof teamName === 'string') {
+      if (typeof teamName === &#x27;string&#x27;) {
         let path = Teams._getPathForTeam(teamName);
-        if (path) { //we just concatenate the team name to it's path
-          return path + '-' + teamName;
+        if (path) { //we just concatenate the team name to it&#x27;s path
+          return path + &#x27;-&#x27; + teamName;
         } else { //there is no path for this team
           return teamName;
         }
@@ -288,12 +372,12 @@ _.extend(Teams, {
      * with the passed in team as children.
      */
     getAllTeamsUnderTeam: function(team) {
-      if (typeof team === 'object') {
+      if (typeof team === &#x27;object&#x27;) {
         team = team.name;
       }
 
-      if (typeof team === 'string') {
-        let teams = Meteor.teams.find({ 'path' : new RegExp(team) }, //'^' +
+      if (typeof team === &#x27;string&#x27;) {
+        let teams = Meteor.teams.find({ &#x27;path&#x27; : new RegExp(team) }, //&#x27;^&#x27; +
                       { fields: {_id: 0, name:1}}).fetch();
 
         return teams;
@@ -308,12 +392,12 @@ _.extend(Teams, {
      * direct children. Does not go deeper than one level.
      */
     getTeamsDirectlyUnderTeam: function(team) {
-      if (typeof team === 'object') {
+      if (typeof team === &#x27;object&#x27;) {
         team = team.name;
       }
 
-      if (typeof team === 'string') {
-        let teams = Meteor.teams.find({ 'path': new RegExp(team+"$") },
+      if (typeof team === &#x27;string&#x27;) {
+        let teams = Meteor.teams.find({ &#x27;path&#x27;: new RegExp(team+&quot;$&quot;) },
                       { fields: {_id: 0, name:1}}).fetch();
 
         return teams;
@@ -325,9 +409,9 @@ _.extend(Teams, {
      * second is a parent somewhere upwards.
     */
     _isAncestorForTeam: function(team, potentialAncestor) {
-      if (typeof team === 'string') {
+      if (typeof team === &#x27;string&#x27;) {
         return Teams._getFullPathForTeam(team).includes(potentialAncestor);
-      } else if (typeof team === 'object') {
+      } else if (typeof team === &#x27;object&#x27;) {
         return Teams._getFullPathForTeam(Object.keys(team)[0]).includes(potentialAncestor);
       } else {
         return false;
@@ -357,11 +441,11 @@ _.extend(Teams, {
 
       if (!user) return false;
 
-      if ('string' === typeof user) {
+      if (&#x27;string&#x27; === typeof user) {
         user = Meteor.users.findOne({_id:user}, {fields: {_id:1, teams:1}});
       }
 
-      if ('object' === typeof user) {
+      if (&#x27;object&#x27; === typeof user) {
         userTeams = user.teams;
         if (!_.isArray(userTeams)) userTeams = [userTeams];
 
@@ -392,8 +476,8 @@ _.extend(Teams, {
       if (!_.isArray(teams)) teams = [teams];
       if (!_.isArray(roles)) roles = [roles];
 
-      return _.some(teams, (team) => {
-        return _.some(roles, (role) => {
+      return _.some(teams, (team) =&gt; {
+        return _.some(roles, (role) =&gt; {
           return _.contains(Teams.getRolesInTeamForUser(user, team), role);
         });
       });
@@ -421,15 +505,15 @@ _.extend(Teams, {
 
       if (!user) return false;
 
-      if ('object' === typeof user) {
+      if (&#x27;object&#x27; === typeof user) {
         userTeams = user.teams;
 
         if (_.isArray(userTeams)) {
           return _.some(teams, function(team) {
             return _.contains(userTeams, team);
           });
-        } else if (userTeams && 'object' === typeof userTeams) {
-          return _.some(teams, (team) => {
+        } else if (userTeams &amp;&amp; &#x27;object&#x27; === typeof userTeams) {
+          return _.some(teams, (team) =&gt; {
             return userTeams[team] ? true : false;
           });
 
@@ -437,7 +521,7 @@ _.extend(Teams, {
 
         //missing the teams field, try going direct via id
         id = user._id;
-      } else if ('string' === typeof user) {
+      } else if (&#x27;string&#x27; === typeof user) {
         id = user;
       }
 
@@ -446,9 +530,9 @@ _.extend(Teams, {
       query = {_id:id, $or: []};
 
       //throw each team query in too
-      _.some(teams, (team) => {
+      _.some(teams, (team) =&gt; {
         teamQuery = {};
-        teamQuery['teams.' + team] = {$exists:true};
+        teamQuery[&#x27;teams.&#x27; + team] = {$exists:true};
         query.$or.push(teamQuery);
       });
 
@@ -467,9 +551,9 @@ _.extend(Teams, {
       if (!_.isArray(teamNames)) teamNames = [teamNames];
       let response = [];
 
-      _.each(teamNames, (teamName) => {
+      _.each(teamNames, (teamName) =&gt; {
         let query = {};
-        query['teams.' + teamName] = {$exists:true};
+        query[&#x27;teams.&#x27; + teamName] = {$exists:true};
 
         response = response.concat(Meteor.users.find(query, {fields: {_id: 1}}).fetch());
       });
@@ -487,7 +571,7 @@ _.extend(Teams, {
     */
     getAllMembersOfTeam: function(teamName) {
       if (!teamName) return [];
-      throw new Error("This function is not yet implemented");
+      throw new Error(&quot;This function is not yet implemented&quot;);
       return false;
     },
     /**
@@ -499,7 +583,7 @@ _.extend(Teams, {
      * @return {Object} The top most parent of the provided team
     */
     getTopLevelTeam: function(teamName) {
-      return Meteor.teams.findOne({ name: teamName, path: ''});
+      return Meteor.teams.findOne({ name: teamName, path: &#x27;&#x27;});
     },
     /**
      * Gets a list of all of the top most teams.
@@ -508,7 +592,7 @@ _.extend(Teams, {
      * @return {Array} All teams without parents
     */
     getAllTopLevelTeams: function() {
-      return Meteor.teams.find({path: { $eq: '' }}).fetch();
+      return Meteor.teams.find({path: { $eq: &#x27;&#x27; }}).fetch();
     },
     /**
      * Gets all of the teams currently being tracked. Sorted alphabetically.
@@ -532,11 +616,11 @@ _.extend(Teams, {
       if (!user) return [];
       if (!team) return [];
 
-      if ('string' === typeof user) {
+      if (&#x27;string&#x27; === typeof user) {
          user = Meteor.users.findOne(
                   {_id: user},
                   {fields: {teams:1}});
-      } else if ('object' !== typeof user) {
+      } else if (&#x27;object&#x27; !== typeof user) {
         //invalid user object
         return [];
       }
@@ -547,7 +631,7 @@ _.extend(Teams, {
       return user.teams[team];
     },
     /**
-     * Gets all of the names of the user's associated teams. If a specific role
+     * Gets all of the names of the user&#x27;s associated teams. If a specific role
      * is provided, then only the team names that the user has that role in will
      * be returned.
      *
@@ -563,7 +647,7 @@ _.extend(Teams, {
       return Object.keys(Teams.getTeamsForUser(user, role));
     },
     /**
-     * Gets all of the user's associated teams as objects. If a specific role is
+     * Gets all of the user&#x27;s associated teams as objects. If a specific role is
      * provided, then only the teams that the user has that role in will be
      * returned.
      *
@@ -580,18 +664,18 @@ _.extend(Teams, {
 
       if (!user) return [];
       if (role) {
-        if ('string' === typeof role) return [];
-        if ('$' === role[0]) return [];
+        if (&#x27;string&#x27; === typeof role) return [];
+        if (&#x27;$&#x27; === role[0]) return [];
 
         //convert any periods to underscores
-        role = role.replace('.', '_');
+        role = role.replace(&#x27;.&#x27;, &#x27;_&#x27;);
       }
 
-      if ('string' === typeof user) {
+      if (&#x27;string&#x27; === typeof user) {
          user = Meteor.users.findOne(
                   {_id: user},
                   {fields: {teams:1}});
-      } else if ('object' !== typeof user) {
+      } else if (&#x27;object&#x27; !== typeof user) {
         //invalid user object
         return [];
       }
@@ -600,7 +684,7 @@ _.extend(Teams, {
       if (!user || !user.teams || _.isArray(user.teams)) return [];
 
       if (role) {
-        _.each(user.teams, (teamRoles, teamName) => {
+        _.each(user.teams, (teamRoles, teamName) =&gt; {
           if (_.contains(teamRoles, role)) {
             userTeams.push(teamName);
           }
@@ -611,7 +695,7 @@ _.extend(Teams, {
       }
     },
     /**
-     * Private function 'template' that uses $set to construct an update object
+     * Private function &#x27;template&#x27; that uses $set to construct an update object
      * for MongoDB.  Passed to _updateUserTeams
      *
      * @method _update_$set_fn
@@ -623,12 +707,12 @@ _.extend(Teams, {
        var update = {};
 
        update.$set = {};
-       update.$set['teams.' + team] = _.without(roles, null);
+       update.$set[&#x27;teams.&#x27; + team] = _.without(roles, null);
 
        return update;
      },
      /**
-      * Private function 'template' that uses $addToSet to construct an update
+      * Private function &#x27;template&#x27; that uses $addToSet to construct an update
       * object for MongoDB.  Passed to _updateUserTeams
       *
       * @method _update_$addToSet_fn
@@ -640,7 +724,7 @@ _.extend(Teams, {
         var update = {};
 
         update.$addToSet = {};
-        update.$addToSet['teams.' + team] = {$each: _.without(roles, null)};
+        update.$addToSet[&#x27;teams.&#x27; + team] = {$each: _.without(roles, null)};
 
         return update;
       },
@@ -651,8 +735,8 @@ _.extend(Teams, {
         update.$addToSet
       }*/
       _updateUserTeams: function(users, teams, roles, updateFactory) {
-        if (!users) throw new Error("Missing 'users' param");
-        if (!teams) throw new Error("Missing 'teams' param");
+        if (!users) throw new Error(&quot;Missing &#x27;users&#x27; param&quot;);
+        if (!teams) throw new Error(&quot;Missing &#x27;teams&#x27; param&quot;);
 
         var existingTeams,
             query,
@@ -664,10 +748,10 @@ _.extend(Teams, {
         if (!_.isArray(roles)) roles = [roles];
 
         //remove invalid teams
-        teams = _.reduce(teams, (memo, team) => {
+        teams = _.reduce(teams, (memo, team) =&gt; {
           if (team
-              && 'string' === typeof team
-              && team.trim().length > 0) {
+              &amp;&amp; &#x27;string&#x27; === typeof team
+              &amp;&amp; team.trim().length &gt; 0) {
             memo.push(team.trim());
           }
           return memo;
@@ -678,26 +762,26 @@ _.extend(Teams, {
         //if (teams.length === 0) return
         //not sure why the above is here. perhaps might need in future
 
-        //ensure all teams exist in 'teams' collection
-        existingTeams = _.reduce(Meteor.teams.find({}).fetch(), (memo, team) => {
+        //ensure all teams exist in &#x27;teams&#x27; collection
+        existingTeams = _.reduce(Meteor.teams.find({}).fetch(), (memo, team) =&gt; {
           memo[team.name] = true;
           return memo;
         }, {});
 
-        _.each(teams, (team) => {
+        _.each(teams, (team) =&gt; {
           if (!existingTeams[team]) {
             Teams.createTeam(team);
           }
         });
 
         //ensure users is an array of user ids
-        users = _.reduce(users, (memo, user) => {
+        users = _.reduce(users, (memo, user) =&gt; {
           var _id;
-          if ('string' === typeof user) {
+          if (&#x27;string&#x27; === typeof user) {
             memo.push(user);
-          } else if ('object' === typeof user) {
+          } else if (&#x27;object&#x27; === typeof user) {
             _id = user._id;
-            if ('string' === typeof _id) {
+            if (&#x27;string&#x27; === typeof _id) {
               memo.push(_id);
             }
           }
@@ -705,19 +789,19 @@ _.extend(Teams, {
         }, []);
 
         //update per Team *make this better*
-        _.each(teams, (team) => {
+        _.each(teams, (team) =&gt; {
           //update all users
           update = updateFactory(team, roles);
 
           try {
             if (Meteor.isClient) {
-              //on client, iterate over each user to fulfill Meteor's
-              //'one update per ID' policy
-              _.each(users, (user) => {
+              //on client, iterate over each user to fulfill Meteor&#x27;s
+              //&#x27;one update per ID&#x27; policy
+              _.each(users, (user) =&gt; {
                 Meteor.users.update({_id:user}, update);
               });
             } else {
-              //On the server we can use MongoDB's $in operator for
+              //On the server we can use MongoDB&#x27;s $in operator for
               //better performance
               Meteor.users.update({_id:{$in: users}},
                                 update,
@@ -732,3 +816,22 @@ _.extend(Teams, {
       }//end _updateUserTeams
 }); //end _.extend(Teams ...)
 }());
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

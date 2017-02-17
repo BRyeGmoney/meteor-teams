@@ -1,0 +1,647 @@
+{
+    "project": {
+        "name": "Meteor Teams",
+        "description": "A meteor package to help you to create multi-tiered organizations.",
+        "version": "0.3.0",
+        "url": "https://github.com/BRyeGmoney/meteor-teams/tree/master"
+    },
+    "files": {
+        "client/subscriptions.js": {
+            "name": "client/subscriptions.js",
+            "modules": {},
+            "classes": {},
+            "fors": {
+                "Teams": 1
+            },
+            "namespaces": {}
+        },
+        "client/uiHelpers.js": {
+            "name": "client/uiHelpers.js",
+            "modules": {
+                "UIHelpers": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "teams_common.js": {
+            "name": "teams_common.js",
+            "modules": {
+                "Teams": 1
+            },
+            "classes": {
+                "Teams": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "teams_server.js": {
+            "name": "teams_server.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "UIHelpers": {
+            "name": "UIHelpers",
+            "submodules": {},
+            "elements": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "client/uiHelpers.js",
+            "line": 3,
+            "description": "Convenience functions for use on client.\n\nNOTE: You must restrict user actions on the server-side; any\nclient-side checks are strictly for convenience and must not be\ntrusted."
+        },
+        "Teams": {
+            "name": "Teams",
+            "submodules": {},
+            "elements": {},
+            "classes": {
+                "Teams": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "teams_common.js",
+            "line": 17,
+            "description": "Provides functions related to user authorization. Compatible with built-in Meteor accounts package."
+        }
+    },
+    "classes": {
+        "Teams": {
+            "name": "Teams",
+            "shortname": "Teams",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Teams",
+            "file": "teams_common.js",
+            "line": 17,
+            "description": "Authorization package compatible with built-in Meteor accounts system.\n\nStores user's current roles and team associations in a 'teams' field on the user object.",
+            "is_constructor": 1
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "client/subscriptions.js",
+            "line": 4,
+            "description": "Subscription handle for the currently logged in user's permissions.\n\nNOTE: The corresponding publish function, `_teams`, depends on\n`this.userId` so it will automatically re-run when the currently\nlogged-in user changes.",
+            "example": [
+                "\n\n    `Teams.subscription.ready()` // => `true` if user teams have been loaded"
+            ],
+            "itemtype": "property",
+            "name": "subscription",
+            "type": "Object",
+            "class": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 9,
+            "description": "Teams collection documents consist of an id, team name and mongo materialized path\n  ex: { _id:<uuid>, name: \"teamName\", path: \"parentTeams\" }",
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 32,
+            "description": "Create a new team. Outside whitespace will be trimmed. Inside will be converted to _",
+            "itemtype": "method",
+            "name": "createTeam",
+            "params": [
+                {
+                    "name": "team",
+                    "description": "- Name of team",
+                    "type": "String"
+                },
+                {
+                    "name": "owningTeam",
+                    "description": "- Id of owning team",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The id of the newly created team",
+                "type": "String"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 76,
+            "description": "Delete an existing team. Will throw \"Team in use\" error if any users\nare currently assigned to the target team.",
+            "itemtype": "method",
+            "name": "deleteTeam",
+            "params": [
+                {
+                    "name": "team",
+                    "description": "- Name of team",
+                    "type": "String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 102,
+            "description": "Add the user(s) to a single or multiple team(s) with no roles",
+            "itemtype": "method",
+            "name": "addUsersToTeams",
+            "params": [
+                {
+                    "name": "users",
+                    "description": "- The user object(s) or id(s) of all users to modify",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- The name(s) of the team(s) this user(s) will be a part of",
+                    "type": "Array|String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 112,
+            "description": "Add role(s) to all team(s) for all user(s).",
+            "itemtype": "method",
+            "name": "addUsersToRolesInTeams",
+            "params": [
+                {
+                    "name": "users",
+                    "description": "- User id(s) or object(s) with an _id field",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "roles",
+                    "description": "- Name(s) of roles/permissions to add users to",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that the role(s) will be applied to",
+                    "type": "Array|String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 123,
+            "description": "Set the user(s) to a single or multiple team(s) with no roles. This\nremoves all current teams and their roles so that only the teams passed\nare part of the user(s) list of teams.",
+            "itemtype": "method",
+            "name": "setUsersTeams",
+            "params": [
+                {
+                    "name": "users",
+                    "description": "- User id(s) or object(s) with an _id field",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that the user(s) will be a part of",
+                    "type": "Array|String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 135,
+            "description": "Set the user(s) to a single or multiple team(s) with the passed in role(s). This\nremoves all current teams and their roles so that only the team(s) and role(s) passed\nare part of the user(s) list of teams.",
+            "itemtype": "method",
+            "name": "setUsersRolesInTeams",
+            "params": [
+                {
+                    "name": "users",
+                    "description": "- User id(s) or object(s) with an _id field",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "roles",
+                    "description": "- Name(s) of roles/permissions to add users to",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that the user(s) will be a part of",
+                    "type": "Array|String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 148,
+            "description": "Removes the desired role(s) from the desired teams. Does not remove the user(s)\nfrom the team(s).",
+            "itemtype": "method",
+            "name": "removeUsersFromRolesInTeams",
+            "params": [
+                {
+                    "name": "users",
+                    "description": "- User id(s) or object(s) with an _id field",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "roles",
+                    "description": "- Name(s) of roles/permissions to add users to",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that the user(s) will be a part of",
+                    "type": "Array|String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 203,
+            "description": "Removes any associations the user has with the passed in team(s).",
+            "itemtype": "method",
+            "name": "removeUsersFromTeams",
+            "params": [
+                {
+                    "name": "users",
+                    "description": "- User id(s) or object(s) with an _id field",
+                    "type": "Array|String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that the user(s) is to be removed from",
+                    "type": "Array|String"
+                }
+            ],
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 281,
+            "description": "Returns all the teams that are direct and indirect(descendants) children\nof the passed in team.",
+            "itemtype": "method",
+            "name": "getAllTeamsUnderTeam",
+            "params": [
+                {
+                    "name": "team",
+                    "description": "- Name of team that you wish to get all the children of",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "An array of ALL (down all branches) team names associated\nwith the passed in team as children.",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 302,
+            "description": "Returns only the teams that are direct children of the passed in team.",
+            "itemtype": "method",
+            "name": "getTeamsDirectlyUnderTeam",
+            "params": [
+                {
+                    "name": "team",
+                    "description": "- Name of team that you wish to get all the children of",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "An array of team names associated with the passed in team as\ndirect children. Does not go deeper than one level.",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 336,
+            "description": "Checks whether the user belongs either directly to the passed in team or\nto a descendant of the passed in team.",
+            "itemtype": "method",
+            "name": "userBelongsToTeams",
+            "params": [
+                {
+                    "name": "user",
+                    "description": "- The user who you wish to check",
+                    "type": "String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that you wish to check the user\nagainst",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "Whether the user is associated at all with any of the\nteams",
+                "type": "Boolean"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 378,
+            "description": "Checks to make sure that the user has any of the roles in any of the\nteams.",
+            "itemtype": "method",
+            "name": "userHasRolesInTeams",
+            "params": [
+                {
+                    "name": "user",
+                    "description": "- The user who you wish to check",
+                    "type": "String"
+                },
+                {
+                    "name": "roles",
+                    "description": "- The roles you wish to check the user against",
+                    "type": "Array"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that you wish to check the user\nagainst",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "Whether the user has any of the roles in any of the teams",
+                "type": "Boolean"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 401,
+            "description": "Checks to make sure that the user is directly associated with any of the\nprovided teams.",
+            "itemtype": "method",
+            "name": "userIsInTeam",
+            "params": [
+                {
+                    "name": "user",
+                    "description": "- The user who you wish to check",
+                    "type": "String"
+                },
+                {
+                    "name": "teams",
+                    "description": "- Name(s) of team(s) that you wish to check the user\nagainst",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "Whether the user is directly a part of any of the teams",
+                "type": "Boolean"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 458,
+            "description": "Gets all of the users that are directly a part of the list of teams.",
+            "itemtype": "method",
+            "name": "getDirectMembersOfTeams",
+            "params": [
+                {
+                    "name": "teamNames",
+                    "description": "- Name(s) of team(s) that you wish to find all\nof the users of",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "All user ids directly associated with the teams",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 479,
+            "description": "Gets all of the users that are directly and indirectly associated with\nthe provided teams. Not yet implemented.",
+            "itemtype": "method",
+            "name": "getAllMembersOfTeams",
+            "params": [
+                {
+                    "name": "teamNames",
+                    "description": "- Name(s) of team(s) that you wish to find all\nof the users of",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "All user ids directly associated with the teams",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 493,
+            "description": "Gets the highest level parent of the provided team.",
+            "itemtype": "method",
+            "name": "getTopLevelTeam",
+            "params": [
+                {
+                    "name": "teamName",
+                    "description": "- Name of the team whose top most parent you wish\nto find",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "The top most parent of the provided team",
+                "type": "Object"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 504,
+            "description": "Gets a list of all of the top most teams.",
+            "itemtype": "method",
+            "name": "getAllTopLevelTeams",
+            "return": {
+                "description": "All teams without parents",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 513,
+            "description": "Gets all of the teams currently being tracked. Sorted alphabetically.",
+            "itemtype": "method",
+            "name": "getAllTeams",
+            "return": {
+                "description": "All team objects that are being tracked in the database",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 522,
+            "description": "Gets a list of the roles that a particular user has in a team.",
+            "itemtype": "method",
+            "name": "getRolesInTeamForUser",
+            "params": [
+                {
+                    "name": "user",
+                    "description": "- Id of the user whose roles you wish to retrieve",
+                    "type": "String"
+                },
+                {
+                    "name": "team",
+                    "description": "- The name of the team you wish to check the user\nagainst",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "All roles associated with a user in the passed in team",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 549,
+            "description": "Gets all of the names of the user's associated teams. If a specific role\nis provided, then only the team names that the user has that role in will\nbe returned.",
+            "itemtype": "method",
+            "name": "getTeamNamesForUser",
+            "params": [
+                {
+                    "name": "user",
+                    "description": "- The id of the user whose teams you wish to retrieve",
+                    "type": "Array"
+                },
+                {
+                    "name": "role",
+                    "description": "- Optional: return only the teams that the user has\nthis role in",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "All the team objects that the user is associated with, if\na role is provided then only the team objects that the user has that role\nin",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 565,
+            "description": "Gets all of the user's associated teams as objects. If a specific role is\nprovided, then only the teams that the user has that role in will be\nreturned.",
+            "itemtype": "method",
+            "name": "getTeamsForUser",
+            "params": [
+                {
+                    "name": "user",
+                    "description": "- The id of the user whose teams you wish to retrieve",
+                    "type": "Array"
+                },
+                {
+                    "name": "role",
+                    "description": "- Optional: return only the teams that the user has\nthis role in",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "All the team objects that the user is associated with, if\na role is provided then only the team objects that the user has that role\nin",
+                "type": "Array"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 613,
+            "description": "Private function 'template' that uses $set to construct an update object\nfor MongoDB.  Passed to _updateUserTeams",
+            "itemtype": "method",
+            "name": "_update_$set_fn",
+            "access": "protected",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "teams",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "update object for use in MongoDB update command",
+                "type": "Object"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_common.js",
+            "line": 630,
+            "description": "Private function 'template' that uses $addToSet to construct an update\nobject for MongoDB.  Passed to _updateUserTeams",
+            "itemtype": "method",
+            "name": "_update_$addToSet_fn",
+            "access": "protected",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "teams",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "update object for use in MongoDB update command",
+                "type": "Object"
+            },
+            "class": "Teams",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_server.js",
+            "line": 3,
+            "description": "Teams collection documents consist of a unique name and a path denoting\nteams higher in that team's hierarchy\nex: { _id: \"123\", name: \"teamA\", path: \"\"\n    { _id: \"234\", name: \"division1\", path:\"teamA\"},\n    { _id: \"456\", name: \"slave_drivers\", path:\"teamA-division1\"},\n    { _id: '789', name: \"division2\", path:\"teamA\"},\n              ...\n Holy smokes!",
+            "class": "",
+            "module": "Teams"
+        },
+        {
+            "file": "teams_server.js",
+            "line": 19,
+            "description": "Publish logged-in user's teams so client side checks can work.\n\nUse a named publish function so clients can check 'ready()' state.",
+            "class": "",
+            "module": "Teams"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nTeams collection documents consist of an id, team name and mongo materialized path\n  ex: { _id:<uuid>, name: \"teamName\", path: \"parentTeams\" }",
+            "line": " teams_common.js:9"
+        },
+        {
+            "message": "Missing item type\nTeams collection documents consist of a unique name and a path denoting\nteams higher in that team's hierarchy\nex: { _id: \"123\", name: \"teamA\", path: \"\"\n    { _id: \"234\", name: \"division1\", path:\"teamA\"},\n    { _id: \"456\", name: \"slave_drivers\", path:\"teamA-division1\"},\n    { _id: '789', name: \"division2\", path:\"teamA\"},\n              ...\n Holy smokes!",
+            "line": " teams_server.js:3"
+        },
+        {
+            "message": "Missing item type\nPublish logged-in user's teams so client side checks can work.\n\nUse a named publish function so clients can check 'ready()' state.",
+            "line": " teams_server.js:19"
+        }
+    ]
+}

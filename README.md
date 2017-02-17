@@ -10,38 +10,76 @@ Using this package, you can create multi-tiered organizations that users can be 
 it'll turn out that enforcing these more strictly will be a good idea, but for now its your own fault if you have one user with role: admin and another with role:adin and you can't get the
 second guy to see stuff he should.
 
-## NOTE:
+## Installing: ##
 
-I, for some reason, replaced spaces with underscores in previous versions when creating a team. This meant that Dog Owner's Club would be inserted into the db as Dog_Owner\'s_Club and when
-I tried inserting roles into a user on a team, it would search the db for Dog Owner's Club but not find it, then try to create the team and be going in as Dog_Owner\'s_Club, which already
-exists, which would throw an error.
+1. Add one of the built-in accounts packages so the Meteor.users collection exists
+```bash
+meteor add accounts-password
+```
 
-Anything you have currently should work just fine, but any future entries will be in the db as you have them written.
+2. Install the meteor teams package to your project directory
+```bash
+meteor add bgromadzki:meteor-teams
+```
 
-## FUTURE UPDATES:
+3. Run the application
+```bash
+meteor
+```
 
-* Better documentation
+## Basic Usage: ##
+
+To be able to associate a user with a team, we need to have the team created:
+
+```js
+  Teams.createTeam('teamA');
+```
+
+Now lets place two of our users into this newly created team:
+
+```js
+  Teams.addUsersToTeams([users.bugs, users.daffy], ['teamA']);
+```
+
+A team isn't an industrial era style team if there isn't a slave driver, so lets choose one of our users to be the driver:
+
+```js
+  Teams.addUsersToRolesInTeams(users.bugs, ["slave_drivers"], 'teamA');
+```
+
+If a user is a driver, then they should be able to hold the whip, no?
+
+```js
+  if (Teams.userHasRolesInTeams(users.bugs, ["slave_drivers"], 'teamA')) {
+    giveWhip(users.bugs);
+  }
+```
+
+## NOTE (v0.3.0): ##
+
+There have been a few slight changes in semantics to clarify the functionality of certain methods, as well as to ensure consistent parameters.
+
+The following function names have been changed:
+
+```js
+  addUsersToRolesInTeam -> addUsersToRolesInTeams
+  userBelongsToTeam     -> userBelongsToTeams
+  userHasRolesInTeam    -> userHasRolesInTeams
+```
+
+The following functions have parameter order changed:
+
+```js
+  removeUsersFromRolesInTeams(users, teams, roles) -> removeUsersFromRolesInTeams(users, roles, teams)
+```
+
+The following functions have been added:
+
+```js
+  setUsersRolesInTeams(users, roles, teams)
+```
+
+## FUTURE UPDATES: ##
+
 * Remove need for unique team names, i should be able to have Dog Lovers->owners and Cat Lovers->owners without them stepping on each other's toes
 * Feel free to shoot me a message on github/open an issue/whatever for anything you think needs to be in this package
-
-## 0.2.6 Functions Supported:
-
-* createTeam(team [, owningTeam])
-* deleteTeam(team)
-* addUsersToRolesInTeam(users, roles, team)
-* addUsersToTeams(users, teams)
-* setUserTeams(users, teams)
-* removeUsersFromRolesInTeams(users, teams, roles)
-* removeUsersFromTeams(users, teams)
-* userBelongsToTeam(user, teams)
-* userHasRolesInTeam(user, roles, teams)
-* userIsInTeam(user, teams)
-* getDirectMembersOfTeams(teams)
-* getTeamsDirectlyUnderTeam(team)
-* getAllTeamsUnderTeam(team)
-* getTeamNamesForUser(user [, role])
-* getTeamsForUser(user [, role])
-* getRolesInTeamForUser(user, team)
-* getAllTeams()
-* getAllTopLevelTeams()
-* getTopLevelTeam(team)

@@ -185,7 +185,7 @@
           Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
           test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
 
-          Teams.addUsersToRolesInTeam(users.bo, ['baseUser', 'advantageUser'], 'teamA');
+          Teams.addUsersToRolesInTeams(users.bo, ['baseUser', 'advantageUser'], 'teamA');
           test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'advantageUser'] );
 
           test.equal(Teams.getRolesInTeamForUser(users.bo, 'divisionA'), []);
@@ -199,11 +199,25 @@
           Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
           test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
 
-          Teams.addUsersToRolesInTeam(users.bo, ['baseUser', 'advantageUser', 'superUser'], 'teamA');
+          Teams.addUsersToRolesInTeams(users.bo, ['baseUser', 'advantageUser', 'superUser'], 'teamA');
           test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'advantageUser', 'superUser'] );
 
-          Teams.removeUsersFromRolesInTeams(users.bo, 'teamA', ['advantageUser']);
+          Teams.removeUsersFromRolesInTeams(users.bo, ['advantageUser'], 'teamA');
           test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'superUser']);
+      })
+
+      Tinytest.add(
+        'teams - can set and reset roles in a team',
+        (test) => {
+          reset();
+
+          Teams.setUsersRolesInTeams(users.bo, ['baseUser', 'advantageUser', 'superUser'], ['teamA', 'teamB']);
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['baseUser', 'advantageUser', 'superUser']);
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamB'), ['baseUser', 'advantageUser', 'superUser']);
+
+          Teams.setUsersRolesInTeams(users.bo, ['nonUser'], ['teamA']);
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamA'), ['nonUser']);
+          test.equal(Teams.getRolesInTeamForUser(users.bo, 'teamB'), ['baseUser', 'advantageUser', 'superUser']);
       })
 
       Tinytest.add(
@@ -214,12 +228,12 @@
           Teams.addUsersToTeams(users.bo, ['teamA', 'divisionA']);
           test.equal(Teams.getTeamNamesForUser(users.bo), ['teamA', 'divisionA']);
 
-          Teams.addUsersToRolesInTeam(users.bo, ['baseUser', 'advantageUser', 'superUser'], 'teamA');
-          Teams.addUsersToRolesInTeam(users.bo, ['baseUser'], 'divisionA');
+          Teams.addUsersToRolesInTeams(users.bo, ['baseUser', 'advantageUser', 'superUser'], 'teamA');
+          Teams.addUsersToRolesInTeams(users.bo, ['baseUser'], 'divisionA');
 
-          test.isTrue(Teams.userHasRolesInTeam(users.bo, 'baseUser', 'divisionA'));
-          test.isFalse(Teams.userHasRolesInTeam(users.bo, 'advantageUser', 'divisionA'));
-          test.isTrue(Teams.userHasRolesInTeam(users.bo, ['baseUser', 'superUser'], 'teamA'));
+          test.isTrue(Teams.userHasRolesInTeams(users.bo, 'baseUser', 'divisionA'));
+          test.isFalse(Teams.userHasRolesInTeams(users.bo, 'advantageUser', 'divisionA'));
+          test.isTrue(Teams.userHasRolesInTeams(users.bo, ['baseUser', 'superUser'], 'teamA'));
       })
 
       Tinytest.add(
@@ -234,7 +248,7 @@
 
           test.isFalse(Teams.userIsInTeam(users.bo, 'teamA'));
           //test.equal(Teams.getFullPathForTeam('slave_drivers'), 'teamA-divisionA-slave_drivers');
-          test.isTrue(Teams.userBelongsToTeam(users.bo, 'teamA'));
+          test.isTrue(Teams.userBelongsToTeams(users.bo, 'teamA'));
       })
 
       Tinytest.add(
@@ -473,7 +487,7 @@
             Teams.createTeam('divisionA', 'teamA');
 
             test.isTrue(Meteor.teams.find().fetch().length == 2);
-            Teams.addUsersToRolesInTeam([users.bo], 'role-guy', 'divisionA');
+            Teams.addUsersToRolesInTeams([users.bo], 'role-guy', 'divisionA');
 
             test.isTrue(Teams.userIsInTeam(users.bo,'divisionA'));
           }
@@ -487,7 +501,7 @@
             Teams.createTeam("Dog Owner's Club/Johns", 'teamA');
 
             test.isTrue(Meteor.teams.find().fetch().length == 2);
-            Teams.addUsersToRolesInTeam([users.bo], 'role-guy', "Dog Owner's Club/Johns");
+            Teams.addUsersToRolesInTeams([users.bo], 'role-guy', "Dog Owner's Club/Johns");
 
             test.isTrue(Teams.userIsInTeam(users.bo,"Dog Owner's Club/Johns"));
           }

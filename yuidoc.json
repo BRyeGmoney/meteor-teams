@@ -1,0 +1,9 @@
+{
+    "name": "Meteor Teams",
+    "description": "A meteor package to help you to create multi-tiered organizations.",
+    "version": "0.3.0",
+    "url": "https://github.com/BRyeGmoney/meteor-teams/tree/master",
+    "options": {
+        "outdir": "./docs"
+    }
+}
