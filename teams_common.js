@@ -294,7 +294,7 @@ _.extend(Teams, {
 
       if (typeof team === 'string') {
         let teams = Meteor.teams.find({ 'path' : new RegExp(team) }, //'^' +
-                      { fields: {_id: 0, name:1}}).fetch();
+                      { fields: {_id: 1, name:1}}).fetch();
 
         return teams;
       }
@@ -314,7 +314,7 @@ _.extend(Teams, {
 
       if (typeof team === 'string') {
         let teams = Meteor.teams.find({ 'path': new RegExp(team+"$") },
-                      { fields: {_id: 0, name:1}}).fetch();
+                      { fields: {_id: 1, name:1}}).fetch();
 
         return teams;
       }

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'bgromadzki:meteor-teams',
-  version: '0.3.0',
+  version: '0.3.1',
   // Brief, one-line summary of the package.
   summary: 'Hierarchy style authorization (using mongo materialized paths pattern)',
   // URL to the Git repository containing the source code for this package.
